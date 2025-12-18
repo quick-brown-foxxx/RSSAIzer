@@ -1,0 +1,23 @@
+<Project>
+    <!-- Automatically restore dotnet tools (including CSharpier) before build -->
+    <!-- This ensures CSharpier is installed automatically for all developers -->
+    <Target Name="RestoreDotnetTools" BeforeTargets="BeforeBuild">
+        <Exec Command="dotnet tool restore" ContinueOnError="true" />
+    </Target>
+    <!-- Automatically format code before build (can be disabled with /p:SkipFormatting=true) -->
+    <Target Name="FormatCode" BeforeTargets="BeforeBuild" Condition="'$(SkipFormatting)' != 'true'">
+        <Exec Command="dotnet tool restore" ContinueOnError="true" />
+        <Exec Command="dotnet csharpier format ." ContinueOnError="true" />
+    </Target>
+    <!-- Format code target that can be run manually: dotnet build -t:Format -->
+    <Target Name="Format">
+        <Exec Command="dotnet tool restore" ContinueOnError="true" />
+        <Exec Command="dotnet csharpier format ." />
+    </Target>
+    <!-- Check formatting without modifying files: dotnet build -t:FormatCheck -->
+    <!-- Useful for CI/CD pipelines -->
+    <Target Name="FormatCheck">
+        <Exec Command="dotnet tool restore" ContinueOnError="true" />
+        <Exec Command="dotnet csharpier check ." />
+    </Target>
+</Project>

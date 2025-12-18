@@ -1,0 +1,18 @@
+@page
+@model RSSAIzer.Web.Pages.LandingModel
+@{
+    ViewData["Title"] = "Welcome";
+}
+
+<div class="container mt-5">
+    <div class="row justify-content-center">
+        <div class="col-md-8 text-center">
+            <h1 class="display-4 mb-4">Welcome to RSSAIzer Digest</h1>
+            <p class="lead mb-4">
+                A simple tool to generate, manage, and view digests from RSS feeds and telegram
+                channels.
+            </p>
+            <a href="@Routes.Endpoint_AuthLogin" class="btn btn-primary btn-lg">Login</a>
+        </div>
+    </div>
+</div>

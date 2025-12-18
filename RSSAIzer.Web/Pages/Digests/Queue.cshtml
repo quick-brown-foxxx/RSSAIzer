@@ -1,0 +1,108 @@
+@page
+@model RSSAIzer.Web.Pages.Digests.QueueModel
+@{
+    ViewData["Title"] = "Digest Processing Queue";
+}
+
+<div class="container mt-4">
+    <h1>Digest Processing Queue</h1>
+
+    <div class="row mt-4">
+        <!-- In Progress Digests -->
+        <div class="col-md-6 mb-4">
+            <div class="card h-100 shadow-sm">
+                <div class="card-header bg-primary text-white">
+                    <h5 class="mb-0">In Progress (@Model.InProgressDigests.Length)</h5>
+                </div>
+                <div class="card-body">
+                    @if (Model.InProgressDigests.Length == 0)
+                    {
+                        <p class="text-muted">No digests currently in progress.</p>
+                    }
+                    else
+                    {
+                        <div class="list-group list-group-flush">
+                            @foreach (var digestId in Model.InProgressDigests)
+                            {
+                                <div class="list-group-item d-flex justify-content-between align-items-center px-0">
+                                    <div>
+                                        <a asp-page="@Routes.Page_DigestProgress" asp-route-id="@digestId"
+                                            class="text-decoration-none">@digestId</a>
+                                    </div>
+                                    @if (!Model.CancellationRequestedDigests.Contains(digestId))
+                                    {
+                                        <form method="post" asp-page-handler="CancelDigest" asp-route-digestId="@digestId"
+                                            onsubmit="return confirm('Are you sure you want to cancel this digest?');">
+                                            <button type="submit" class="btn btn-sm btn-danger">
+                                                <i class="bi bi-x-circle me-1"></i>Cancel
+                                            </button>
+                                        </form>
+                                    }
+                                    else
+                                    {
+                                        <button disabled class="btn btn-sm btn-warning">
+                                            <i class="bi bi-pause-circle me-1"></i>Cancellation
+                                            Requested
+                                        </button>
+                                    }
+                                </div>
+                            }
+                        </div>
+                    }
+                </div>
+            </div>
+        </div>
+
+        <!-- Waiting Digests -->
+        <div class="col-md-6 mb-4">
+            <div class="card h-100 shadow-sm">
+                <div class="card-header bg-secondary text-white">
+                    <h5 class="mb-0">Waiting (@Model.WaitingDigests.Length)</h5>
+                </div>
+                <div class="card-body">
+                    @if (Model.WaitingDigests.Length == 0)
+                    {
+                        <p class="text-muted">No digests in the waiting queue.</p>
+                    }
+                    else
+                    {
+                        <div class="list-group list-group-flush">
+                            @foreach (var digestId in Model.WaitingDigests)
+                            {
+                                <div class="list-group-item d-flex justify-content-between align-items-center px-0">
+                                    <div>
+                                        @digestId
+                                    </div>
+                                    <form method="post" asp-page-handler="RemoveWaitingDigest" asp-route-digestId="@digestId"
+                                        onsubmit="return confirm('Are you sure you want to remove this waiting digest?');">
+                                        <button type="submit" class="btn btn-sm btn-danger">
+                                            <i class="bi bi-trash me-1"></i>Remove
+                                        </button>
+                                    </form>
+                                </div>
+                            }
+                        </div>
+                    }
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="mt-4">
+        <a href="javascript:history.back()" class="btn btn-primary">
+            <i class="bi bi-arrow-left me-1"></i>Back
+        </a>
+        <button class="btn btn-secondary ms-2" onclick="location.reload();">
+            <i class="bi bi-arrow-clockwise me-1"></i>Refresh
+        </button>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        // Auto-refresh the page every 10 seconds
+        setTimeout(function () {
+            window.location.reload();
+        }, 10000);
+    </script>
+}

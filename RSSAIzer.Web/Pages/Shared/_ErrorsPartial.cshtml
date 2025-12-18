@@ -1,0 +1,176 @@
+@using System.Diagnostics
+@using FluentResults
+@using Microsoft.AspNetCore.Mvc.ModelBinding
+
+@*                          *@
+@*                          *@
+@* TempData success message *@
+@if (TempData[nameof(BasePageModel.SuccessMessage)] != null)
+{
+    <div class="alert alert-success alert-dismissible fade show" role="alert">
+        @TempData[nameof(BasePageModel.SuccessMessage)]
+        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+    </div>
+}
+
+@*                                                   *@
+@*                                                   *@
+@* ViewData errors (default error handling approach) *@
+@if (ViewData[nameof(BasePageModel.Errors)] is IEnumerable<IError> errors && errors.Any())
+{
+    <div class="alert alert-danger alert-dismissible fade show" role="alert">
+        <h5>Something went wrong:</h5>
+        <ul class="mb-0">
+            @{
+                var errorIndex = 0;
+                var errs = ((IEnumerable<IError>)ViewData[nameof(BasePageModel.Errors)]!).ToArray();
+                var depth = 0;
+                foreach (var error in errs)
+                {
+                    RenderErrorTree(error, ref errorIndex, ref depth);
+                }
+
+                void RenderErrorTree(IError error, ref int errIndex, ref int depth)
+                {
+                    if (depth > 10)
+                    {
+                        var errorsString = string.Join("\n", errs.Select(x => x.ToString()));
+                        throw new UnreachableException("Recursion limit exceeded in error rendering.\nErrors:\n" + errorsString);
+                    }
+
+                    errIndex++;
+                    if (error is ExceptionalError exception)
+                    {
+                        var collapseId = $"exceptionCard_{errIndex}";
+                        var exceptionString = exception.Exception?.ToString() ?? string.Empty;
+                        var showMessage = !string.IsNullOrEmpty(error.Message) && !exceptionString.Contains(error.Message);
+                        <li class="list-unstyled mt-2">
+                            <div
+                                class="card border-danger bg-danger bg-opacity-10 mb-2 exception-card-min">
+                                <div
+                                    class="card-header d-flex align-items-center p-2 border-bottom-0 bg-opacity-10 bg-secondary">
+                                    <i class="bi bi-exclamation-triangle-fill text-danger me-2"
+                                       title="System error"></i>
+                                    <button
+                                        class="btn btn-link text-danger text-decoration-none p-0 fw-bold flex-grow-1 text-start"
+                                        type="button" data-bs-toggle="collapse"
+                                        data-bs-target="#@collapseId" aria-expanded="false"
+                                        aria-controls="@collapseId">
+                                        System error
+                                    </button>
+                                </div>
+                                <div class="collapse no-transition" id="@collapseId">
+                                    <div class="card-body">
+                                        @if (showMessage)
+                                        {
+                                            <div class="mb-2"><strong>@error.Message</strong></div>
+                                        }
+                                        <pre
+                                            class="stack-trace p-3 border border-danger rounded bg-opacity-25 text-bg-secondary text-black">@exceptionString</pre>
+                                        @if (error.Reasons?.Any() == true)
+                                        {
+                                            <ul class="mt-2">
+                                                @foreach (var reason in error.Reasons)
+                                                {
+                                                    depth++;
+                                                    RenderErrorTree(reason, ref errIndex, ref depth);
+                                                }
+                                            </ul>
+                                        }
+                                    </div>
+                                </div>
+                            </div>
+                        </li>
+                    }
+                    else
+                    {
+                        <li>
+                            <strong>@error.Message</strong>
+                            @if (error.Reasons?.Any() == true)
+                            {
+                                <ul>
+                                    @foreach (var reason in error.Reasons)
+                                    {
+                                        depth++;
+                                        RenderErrorTree(reason, ref errIndex, ref depth);
+                                    }
+                                </ul>
+                            }
+                        </li>
+                    }
+                }
+            }
+        </ul>
+    </div>
+}
+
+@*                     *@
+@*                     *@
+@* Model State section *@
+@if (!ViewData.ModelState.IsValid)
+{
+    <div class="alert alert-danger alert-dismissible fade show" role="alert">
+        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        <h5>Error happened!</h5>
+
+        @* Display non-keyed errors first *@
+        @foreach (var error in ViewData.ModelState[""]?.Errors ?? Enumerable.Empty<ModelError>())
+        {
+            <div>@error.ErrorMessage</div>
+        }
+
+        @* Display keyed errors in collapsible section *@
+        @if (ViewData.ModelState.Keys.Any(k => !string.IsNullOrEmpty(k) && ViewData.ModelState[k] is { } m && m.Errors.Any()))
+        {
+            <div class="mt-2">
+                <button class="btn btn-danger btn-sm" type="button"
+                        data-bs-toggle="collapse"
+                        data-bs-target="#keyedErrors"
+                        aria-expanded="false">
+                    Detailed Errors
+                </button>
+                <div class="collapse mt-2" id="keyedErrors">
+                    @foreach (var modelStateEntry in ViewData.ModelState.Where(x => !string.IsNullOrEmpty(x.Key) && x.Value is not null))
+                    {
+                        foreach (var error in modelStateEntry.Value!.Errors)
+                        {
+                            <div>
+                                <strong>@modelStateEntry.Key:</strong> @error.ErrorMessage
+                            </div>
+                        }
+                    }
+                </div>
+            </div>
+        }
+    </div>
+}
+
+@*                *@
+@*                *@
+@* styles section *@
+<style>
+    .exception-card-min {
+        display: inline-block;
+        min-width: 0;
+        max-width: 100%;
+        vertical-align: top;
+    }
+
+    .exception-card-min .card-header {
+        white-space: nowrap;
+    }
+
+    .exception-card-min .collapse:not(.show) + .card-body,
+    .exception-card-min .collapse:not(.show) {
+        display: none;
+    }
+
+    .no-transition {
+        transition: none !important;
+        animation: none !important;
+    }
+
+    .exception-card-min .collapse.show {
+        display: block;
+    }
+</style>

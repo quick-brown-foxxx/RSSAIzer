@@ -1,0 +1,3 @@
+<Weavers>
+    <RuntimeNullables CheckNonPublic="true" CheckOutputs="true" />
+</Weavers>

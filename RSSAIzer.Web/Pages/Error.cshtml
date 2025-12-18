@@ -1,0 +1,83 @@
+﻿@page
+@model ErrorModel
+@{
+    ViewData["Title"] = "Error";
+}
+
+<div class="text-center mt-5">
+    <div class="error-container">
+        @if (!string.IsNullOrEmpty(Model.ErrorCode))
+        {
+            <h1 class="display-1">@Model.ErrorCode</h1>
+        }
+        else
+        {
+            <h1 class="display-1">Error</h1>
+        }
+
+        <div class="mb-4">
+            <img src="~/images/error.svg" alt="Error illustration" class="error-image"
+                 style="max-width: 300px; margin: 2rem 0;"/>
+        </div>
+
+        @if (Model.ShowException)
+        {
+            <div class="alert alert-danger text-start">
+                <h4 class="alert-heading">Error Details</h4>
+                <pre class="mb-0"><code>@Model.ExceptionMessage</code></pre>
+            </div>
+        }
+        else
+        {
+            <h2 class="text-danger mb-4">
+                An error occurred while processing your request.
+            </h2>
+        }
+
+        @if (Model.ShowRequestId)
+        {
+            <p class="text-muted">
+                <small>Request ID: <code>@Model.RequestId</code></small>
+            </p>
+        }
+
+        <div class="mt-4">
+            <a asp-page="@Routes.Page_Index" class="btn btn-primary">
+                <i class="bi bi-house-door"></i> Return Home
+            </a>
+            <button onclick="history.back()" class="btn btn-outline-secondary ms-2">
+                <i class="bi bi-arrow-left"></i> Back
+            </button>
+        </div>
+    </div>
+</div>
+
+<style>
+    .error-container {
+        max-width: 600px;
+        margin: 0 auto;
+        padding: 2rem;
+    }
+
+    .error-image {
+        opacity: 0.8;
+        transition: opacity 0.3s ease;
+    }
+
+    .error-image:hover {
+        opacity: 1;
+    }
+
+    pre {
+        background-color: #f8f9fa;
+        padding: 1rem;
+        border-radius: 0.25rem;
+        overflow-x: auto;
+    }
+
+    @@media (max-width: 768px) {
+        .error-container {
+            padding: 1rem;
+        }
+    }
+</style>

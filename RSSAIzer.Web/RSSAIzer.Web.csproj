@@ -1,0 +1,38 @@
+<Project Sdk="Microsoft.NET.Sdk.Web">
+    <PropertyGroup>
+        <DockerDefaultTargetOS>Linux</DockerDefaultTargetOS>
+    </PropertyGroup>
+    <ItemGroup>
+        <PackageReference Include="DotNetEnv" Version="3.1.1" />
+        <PackageReference Include="FluentResults" Version="3.16.0" />
+        <PackageReference Include="Fody" Version="6.9.2" />
+        <PackageReference
+            Include="Microsoft.AspNetCore.Authentication.OpenIdConnect"
+            Version="9.0.6"
+        />
+        <PackageReference Include="RuntimeNullables.Fody" Version="2.0.0" PrivateAssets="all" />
+    </ItemGroup>
+    <ItemGroup>
+        <ProjectReference Include="..\RSSAIzer.Backend\RSSAIzer.Backend.csproj" />
+    </ItemGroup>
+    <ItemGroup>
+        <_ContentIncludedByDefault Remove="wwwroot\lib\autosize\src\autosize.js" />
+    </ItemGroup>
+    <ItemGroup>
+        <AdditionalFiles Include="Pages\Feeds\Index.cshtml" />
+    </ItemGroup>
+    <Target Name="NpmInstall" BeforeTargets="Build" Condition="'$(SkipNpmInstall)' != 'true'">
+        <!-- Run a clean install every build to avoid stale node_modules (set -p:SkipNpmInstall=true to skip) -->
+        <Exec Command="npm ci" />
+    </Target>
+    <Target Name="FrontendBuild" AfterTargets="Build">
+        <Exec Command="npm run build" />
+        <ItemGroup>
+            <DistFiles Include="wwwroot/build/**" />
+        </ItemGroup>
+        <Copy
+            SourceFiles="@(DistFiles)"
+            DestinationFolder="$(PublishDir)wwwroot\build\%(RecursiveDir)"
+        />
+    </Target>
+</Project>

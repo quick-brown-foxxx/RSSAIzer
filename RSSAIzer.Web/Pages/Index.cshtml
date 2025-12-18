@@ -1,0 +1,152 @@
+@page
+@model IndexModel
+@{
+    ViewData["Title"] = "Dashboard";
+}
+
+<div class="container">
+    <!-- Header with Quick Actions -->
+    <div class="row mb-4">
+        <div class="col-md-8">
+            <h1>RSSAIzer Digest Dashboard</h1>
+        </div>
+        <div class="col-md-4 text-md-end">
+            <a asp-page="@Routes.Page_DigestsGenerate" class="btn btn-primary">
+                <i class="bi bi-plus-circle"></i> Generate New Digest
+            </a>
+        </div>
+    </div>
+
+    <!-- Statistics Cards -->
+    <div class="row mb-4">
+        <div class="col-md-4">
+            <div class="card bg-primary text-white h-100">
+                <div class="card-body">
+                    <h5 class="card-title">Feeds</h5>
+                    <p class="display-4">@Model.TotalFeeds</p>
+                    <a asp-page="@Routes.Page_FeedsIndex" class="text-white text-decoration-none">
+                        Manage Feeds <i class="bi bi-arrow-right"></i>
+                    </a>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="card bg-success text-white h-100">
+                <div class="card-body">
+                    <h5 class="card-title">Digests</h5>
+                    <p class="display-4">@Model.TotalDigests</p>
+                    <a asp-page="@Routes.Page_DigestsIndex" class="text-white text-decoration-none">
+                        View All Digests <i class="bi bi-arrow-right"></i>
+                    </a>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="card bg-info text-white h-100">
+                <div class="card-body">
+                    <h5 class="card-title">Next Digest</h5>
+                    <p class="display-4">
+                        @(Model.NextDigestTime?.ToString("HH:mm") ?? "N/A")
+                    </p>
+                    <small class="d-block mb-2">UTC time</small>
+                    <a asp-page="@Routes.Page_SettingsIndex" class="text-white text-decoration-none">
+                        Change Schedule <i class="bi bi-arrow-right"></i>
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row">
+        <!-- Latest Digest Preview -->
+        <div class="col-md-7 mb-4">
+            @if (Model.LatestDigest != null)
+            {
+                <div class="card h-100">
+                    <div class="card-header d-flex justify-content-between align-items-center">
+                        <h5 class="mb-0">Latest Digest</h5>
+                        <span class="badge bg-secondary">
+                            @Model.LatestDigest.CreatedAt.ToString("MMM dd, yyyy HH:mm")
+                        </span>
+                    </div>
+                    <div class="card-body">
+                        <p class="card-text">@Model.LatestDigest.Summary</p>
+                        <div class="mt-3 d-flex justify-content-between align-items-center">
+                            <div>
+                                <span class="badge bg-primary me-2">@Model.LatestDigest.PostsCount posts</span>
+                                <span class="badge bg-primary me-2">@Model.LatestDigest.Title</span>
+                            </div>
+                            <a asp-page="@Routes.Page_DigestIndex" asp-route-id="@Model.LatestDigest.Id"
+                               class="btn btn-outline-primary">
+                                View Full Digest
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            }
+            else
+            {
+                <div class="card h-100">
+                    <div class="card-body text-center">
+                        <h5 class="text-muted mt-4">No digests generated yet</h5>
+                        <p class="mb-4">Generate your first digest to see it here</p>
+                        <a asp-page="@Routes.Page_DigestsGenerate" class="btn btn-primary">
+                            <i class="bi bi-plus-circle"></i> Generate New Digest
+                        </a>
+                    </div>
+                </div>
+            }
+        </div>
+
+        <!-- Recent Feeds -->
+        <div class="col-md-5 mb-4">
+            <div class="card h-100">
+                <div class="card-header d-flex justify-content-between align-items-center">
+                    <h5 class="mb-0">Recent Feeds</h5>
+                    <a asp-page="@Routes.Page_FeedsIndex" class="btn btn-sm btn-outline-primary">
+                        View All
+                    </a>
+                </div>
+                <div class="card-body">
+                    @if (!Model.RandomFeeds.Any())
+                    {
+                        <div class="text-center text-muted">
+                            <p class="mb-3">No feeds added yet</p>
+                            <a asp-page="@Routes.Page_FeedsIndex" class="btn btn-outline-primary">
+                                <i class="bi bi-plus-circle"></i> Add Feed
+                            </a>
+                        </div>
+                    }
+                    else
+                    {
+                        <div class="list-group list-group-flush">
+                            @foreach (var feed in Model.RandomFeeds)
+                            {
+                                <div class="list-group-item">
+                                    <div class="d-flex justify-content-between align-items-center">
+                                        <div>
+                                            <h6 class="mb-0">@feed.Title</h6>
+                                            <small class="text-muted">
+                                                Url: @feed.Url
+                                                Url: @feed.Url
+                                            </small>
+                                        </div>
+                                    </div>
+                                </div>
+                            }
+                        </div>
+                    }
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        // Refresh dashboard every 5 minutes
+        setTimeout(function () {
+            window.location.reload();
+        }, 5 * 60 * 1000);
+    </script>
+}

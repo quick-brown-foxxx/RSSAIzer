@@ -1,0 +1,57 @@
+html {
+  position: relative;
+  min-height: 100%;
+}
+
+body {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+  margin: 0;
+}
+
+.content-container {
+  flex: 1 0 auto;
+  padding-bottom: 20px; /* Add some space before footer */
+}
+
+.footer {
+  flex-shrink: 0;
+  width: 100%;
+  white-space: nowrap;
+  line-height: 60px;
+}
+
+/* Custom styles for cards and lists */
+.digest-card {
+  margin-bottom: 1rem;
+  transition: transform 0.2s;
+}
+
+.digest-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+/* Custom styles for forms */
+.settings-form {
+  max-width: 800px;
+  margin: 10px auto;
+}
+
+.required::after {
+  content: "*";
+  color: red;
+  margin-left: 4px;
+}
+
+.stack-trace {
+  font-family: SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono",
+    "Courier New", monospace;
+  font-size: 0.875rem;
+  white-space: pre-wrap;
+  word-break: break-word;
+  max-height: 400px;
+  overflow-y: auto;
+  overflow-x: auto;
+}

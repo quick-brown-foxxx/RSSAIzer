@@ -1,0 +1,22 @@
+
+[*]
+
+# ReSharper properties
+resharper_braces_for_ifelse = required
+resharper_enforce_if_statement_braces_highlighting = hint
+
+[*.cs]
+
+# Ban classic assertions, use fluent instead
+dotnet_diagnostic.FAA0004.severity = error
+
+# Enforce sealed classes
+dotnet_diagnostic.MA0053.severity = warning
+MA0053.public_class_should_be_sealed = true
+MA0053.exceptions_should_be_sealed = true
+
+[**/Migrations/*.cs]
+dotnet_diagnostic.MA0053.severity = none
+
+# Use Count/Length instead of Enumerable.Count()
+dotnet_diagnostic.CA1829.severity = none

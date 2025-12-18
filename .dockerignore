@@ -1,0 +1,100 @@
+﻿# Docker and build files
+**/.dockerignore
+**/Dockerfile*
+**/docker-compose*
+**/azds.yaml
+
+# Git and version control
+**/.git
+**/.gitignore
+**/.gitattributes
+
+# Environment and secrets
+**/.env
+**/*.env
+**/*.env.*
+**/secrets.dev.yaml
+**/values.dev.yaml
+
+# IDE and editor files
+**/.vs
+**/.vscode
+**/.idea
+**/.project
+**/.settings
+**/.toolstarget
+**/*.*proj.user
+**/*.sln.docstates
+**/*.suo
+**/*.user
+**/*.userosscache
+**/*.userprefs
+
+# Build artifacts and outputs
+**/bin
+**/obj
+**/[Dd]ebug
+**/[Dd]ebugPublic
+**/[Rr]elease
+**/[Rr]eleases
+**/x64
+**/x86
+**/bld
+**/artifacts
+**/publish
+**/wwwroot/build
+**/runtime
+
+# Node.js
+**/node_modules
+**/npm-debug.log
+**/package-lock.json.backup
+
+# Test projects and results
+**/*.Tests/
+**/*.Test/
+**/*Tests/
+**/*Test/
+**/[Tt]est[Rr]esult*
+**/[Bb]uild[Ll]og.*
+**/TestResult.xml
+**/coverage*.json
+**/coverage*.xml
+**/coverage*.info
+**/*.coverage
+**/*.coveragexml
+**/*.dotCover
+**/.axoCover
+
+# Logs and temporary files
+**/*.log
+**/*.tmp
+**/*.cache
+**/.sass-cache
+**/.fuse_hidden*
+
+# Documentation
+**/*.md
+**/LICENSE*
+**/docs
+
+# Database files
+**/*.dbmdl
+**/*.jfm
+**/*.mdf
+**/*.ldf
+**/*.ndf
+**/healthchecksdb
+
+# OS-specific files
+**/.DS_Store
+**/Thumbs.db
+**/Desktop.ini
+**/.directory
+
+# Other build tools
+**/.fake
+**/.paket
+**/paket-files
+**/FodyWeavers.xsd
+**/*.binlog

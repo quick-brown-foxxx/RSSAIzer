@@ -1,0 +1,183 @@
+@page
+@using System.Diagnostics
+@model RSSAIzer.Web.Pages.Settings.IndexModel
+@{
+    ViewData["Title"] = "Settings";
+}
+
+<h1>Settings</h1>
+
+@if (Model.Settings == null)
+{
+    throw new UnreachableException("Page is broken, settings are null when trying to render");
+}
+
+<form method="post" class="settings-form">
+
+    <!-- General block -->
+    <div class="card mb-4">
+        <div class="card-header bg-primary text-white">
+            <h5 class="mb-0">General Settings</h5>
+        </div>
+        <div class="card-body">
+            <div class="mb-3">
+                <label asp-for="@Model.Settings.RecipientEmail" class="form-label required"></label>
+                <input asp-for="@Model.Settings.RecipientEmail" class="form-control"/>
+                <span asp-validation-for="@Model.Settings.RecipientEmail"
+                      class="text-danger"></span>
+            </div>
+            <div class="mb-3">
+                <label asp-for="@Model.Settings.DigestTimeUtc" class="form-label required"></label>
+                <input asp-for="@Model.Settings.DigestTimeUtc" class="form-control"/>
+                <span asp-validation-for="@Model.Settings.DigestTimeUtc" class="text-danger"></span>
+            </div>
+        </div>
+    </div>
+
+    <!-- SMTP block -->
+    <div class="card mb-4">
+        <div class="card-header bg-primary text-white">
+            <h5 class="mb-0">SMTP Settings</h5>
+        </div>
+        <div class="card-body">
+            <div class="row">
+                <div class="col-md-6 mb-3">
+                    <label asp-for="@Model.Settings.SmtpHost" class="form-label required"></label>
+                    <input asp-for="@Model.Settings.SmtpHost" class="form-control"/>
+                    <span asp-validation-for="@Model.Settings.SmtpHost" class="text-danger"></span>
+                </div>
+                <div class="col-md-6 mb-3">
+                    <label asp-for="@Model.Settings.SmtpPort" class="form-label required"></label>
+                    <input asp-for="@Model.Settings.SmtpPort" class="form-control"/>
+                    <span asp-validation-for="@Model.Settings.SmtpPort" class="text-danger"></span>
+                </div>
+            </div>
+            <div class="mb-3">
+                <label asp-for="@Model.Settings.SmtpUsername" class="form-label required"></label>
+                <input asp-for="@Model.Settings.SmtpUsername" class="form-control"/>
+                <span asp-validation-for="@Model.Settings.SmtpUsername" class="text-danger"></span>
+            </div>
+            <div class="mb-3">
+                <label asp-for="@Model.Settings.SmtpPassword"
+                       class="form-label required">Password</label>
+                <div class="input-group">
+                    <input asp-for="@Model.Settings.SmtpPassword"
+                           class="form-control password-revealable"/>
+                    <button class="btn btn-outline-secondary password-visibility-toggle"
+                            type="button">
+                        <i class="bi bi-eye"></i>
+                    </button>
+                </div>
+                <span asp-validation-for="@Model.Settings.SmtpPassword" class="text-danger"></span>
+            </div>
+        </div>
+    </div>
+
+    <!-- OpenAI block -->
+    <div class="card mb-4">
+        <div class="card-header bg-primary text-white">
+            <h5 class="mb-0">OpenAI Settings</h5>
+        </div>
+        <div class="card-body">
+            <div class="mb-3">
+                <label asp-for="@Model.Settings.OpenAiApiKey" autocomplete="off"
+                       class="form-label required"></label>
+                <div class="input-group">
+                    <input asp-for="@Model.Settings.OpenAiApiKey"
+                           class="form-control password-revealable"/>
+                    <button class="btn btn-outline-secondary password-visibility-toggle"
+                            type="button">
+                        <i class="bi bi-eye"></i>
+                    </button>
+                </div>
+                <span asp-validation-for="@Model.Settings.OpenAiApiKey" class="text-danger"></span>
+            </div>
+            <div class="mb-3">
+                <label asp-for="@Model.Settings.OpenAiModel" class="form-label required"></label>
+                <input asp-for="@Model.Settings.OpenAiModel" class="form-control"/>
+                <span asp-validation-for="@Model.Settings.OpenAiModel" class="text-danger"></span>
+            </div>
+            <div class="mb-3">
+                <label asp-for="@Model.Settings.OpenAiEndpoint" class="form-label required"></label>
+                <input asp-for="@Model.Settings.OpenAiEndpoint" class="form-control"/>
+                <span asp-validation-for="@Model.Settings.OpenAiEndpoint"
+                      class="text-danger"></span>
+            </div>
+        </div>
+    </div>
+
+    <div class="card mb-4">
+        <div class="card-header bg-primary text-white">
+            <h5 class="mb-0">Prompt Settings</h5>
+        </div>
+
+        <div class="card-body">
+
+            <!-- Info Section -->
+            <div class="alert alert-info p-3 mb-4">
+                <p class="mb-0">
+                    <strong>User Prompt:</strong> WHAT TO DO - specific instructions for processing
+                    posts.
+                    Must include {Content} placeholder.
+                    <br><em>Example: "Summarize this post in 3 sentences: {Content}"</em>
+                </p>
+            </div>
+
+            <!-- Prompt Settings -->
+            <div class="border rounded p-3 bg-light">
+                <!-- Post Summary -->
+                <div class="mb-3">
+                    <label asp-for="@Model.Settings.PromptPostSummaryUser"
+                           class="form-label required fw-bold"></label>
+                    <textarea asp-for="@Model.Settings.PromptPostSummaryUser"
+                              class="form-control input-multiline"></textarea>
+                    <span asp-validation-for="@Model.Settings.PromptPostSummaryUser"
+                          class="text-danger"></span>
+                </div>
+
+                <!-- Post Importance -->
+                <div class="mb-3">
+                    <label asp-for="@Model.Settings.PromptPostImportanceUser"
+                           class="form-label required fw-bold"></label>
+                    <textarea asp-for="@Model.Settings.PromptPostImportanceUser"
+                              class="form-control input-multiline"></textarea>
+                    <span asp-validation-for="@Model.Settings.PromptPostImportanceUser"
+                          class="text-danger"></span>
+                </div>
+
+                <!-- Digest Summary -->
+                <div>
+                    <label asp-for="@Model.Settings.PromptDigestSummaryUser"
+                           class="form-label required fw-bold"></label>
+                    <textarea asp-for="@Model.Settings.PromptDigestSummaryUser"
+                              class="form-control input-multiline"></textarea>
+                    <span asp-validation-for="@Model.Settings.PromptDigestSummaryUser"
+                          class="text-danger"></span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="d-grid gap-2 d-md-flex justify-content-md-end">
+        <button type="submit" class="btn btn-primary">Save Settings</button>
+    </div>
+</form>
+
+
+@section Scripts {
+    <script type="application/javascript">
+        autosize($(".input-multiline"));
+    </script>
+    <script type="text/javascript">
+        $(".password-visibility-toggle").each(function () {
+            const passwordInput = $(this).closest(".input-group").find(".password-revealable");
+            passwordInput.attr("type", "password");
+            $(this).html('<i class="bi bi-eye-slash"></i>');
+            $(this).on("click", function (e) {
+                const type = passwordInput.attr("type") === "password" ? "text" : "password";
+                passwordInput.attr("type", type);
+                $(this).html(type === "password" ? '<i class="bi bi-eye"></i>' : '<i class="bi bi-eye-slash"></i>');
+            });
+        });
+    </script>
+}

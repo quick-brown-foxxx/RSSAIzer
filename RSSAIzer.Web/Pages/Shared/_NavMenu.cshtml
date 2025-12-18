@@ -1,0 +1,19 @@
+<ul class="navbar-nav flex-grow-1">
+    @* TODO check paging logic *@
+    <li class="nav-item">
+        <a class="nav-link @(ViewContext.RouteData.Values["Page"]?.ToString() == Routes.Page_DigestsIndex ? "active" : "")"
+           asp-page="@Routes.Page_DigestsIndex">Digests</a>
+    </li>
+    <li class="nav-item">
+        <a class="nav-link @(ViewContext.RouteData.Values["Page"]?.ToString() == Routes.Page_FeedsIndex ? "active" : "")"
+           asp-page="@Routes.Page_FeedsIndex">Feeds</a>
+    </li>
+    <li class="nav-item">
+        <a class="nav-link @(ViewContext.RouteData.Values["Page"]?.ToString() == Routes.Page_DigestsQueue ? "active" : "")"
+           asp-page="@Routes.Page_DigestsQueue">Digests Queue</a>
+    </li>
+    <li class="nav-item">
+        <a class="nav-link @(ViewContext.RouteData.Values["Page"]?.ToString() == Routes.Page_SettingsIndex ? "active" : "")"
+           asp-page="@Routes.Page_SettingsIndex">Settings</a>
+    </li>
+</ul>

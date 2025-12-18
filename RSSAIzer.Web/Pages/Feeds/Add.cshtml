@@ -1,0 +1,134 @@
+@page
+@model RSSAIzer.Web.Pages.Feeds.AddModel
+@{
+    ViewData["Title"] = "Add Feed";
+}
+
+@if (Model.RssProviders == null)
+{
+    <div class="alert alert-danger">
+        Error in frontend. RssProviders model is null.
+    </div>
+    return;
+}
+
+<div class="row justify-content-center">
+    <div class="col-md-8">
+        <div class="card">
+            <div class="card-header">
+                <h5 class="mb-0">Add New Feed</h5>
+            </div>
+            <div class="card-body">
+                <form method="post">
+                    <div class="mb-3">
+                        <label asp-for="Type" class="form-label required"></label>
+                        <select asp-for="Type" class="form-select"
+                            asp-items="Html.GetEnumSelectList<AddModel.FeedType>()">
+                            <option value="">-- Select Feed Type --</option>
+                        </select>
+                        <span asp-validation-for="Type" class="text-danger"></span>
+                    </div>
+
+                    <!-- Raw RSS Fields -->
+                    <div id="rawRssFields">
+                        <div class="mb-3">
+                            <label asp-for="RawRss!.FeedUrl" class="form-label"></label>
+                            <input asp-for="RawRss!.FeedUrl" class="form-control" type="url" />
+                            <span asp-validation-for="RawRss!.FeedUrl" class="text-danger"></span>
+                            <small class="form-text text-muted">Enter the full URL of the RSS
+                                feed</small>
+                        </div>
+                    </div>
+
+                    <!-- Telegram Channel Fields -->
+                    <div id="telegramFields">
+                        <div class="mb-3">
+                            <label asp-for="Telegram!.ProviderName" class="form-label"></label>
+                            <br />
+                            <small class="form-text text-muted">This service will convert the
+                                Telegram
+                                channel to RSS</small>
+                            <select asp-for="Telegram!.ProviderName" class="form-select">
+                                <option value="">-- Select RSS Provider --</option>
+                                @foreach (var provider in @Model.RssProviders)
+                                {
+                                    <option value="@provider.Name" data-base-url="@provider.BaseUrl">@provider.Name</option>
+                                }
+                            </select>
+                            <span asp-validation-for="Telegram!.ProviderName" class="text-danger"></span>
+                        </div>
+
+                        <div class="mb-3">
+                            <label asp-for="Telegram!.ChannelId" class="form-label"></label>
+                            <div class="input-group">
+                                <span class="input-group-text">t.me/</span>
+                                <input asp-for="Telegram!.ChannelId" class="form-control" />
+                            </div>
+                            <span asp-validation-for="Telegram!.ChannelId" class="text-danger"></span>
+                        </div>
+
+                        <div class="mb-3" id="resultingUrlGroup">
+                            <label class="form-label">Resulting RSS Feed URL</label>
+                            <div class="p-2 bg-light border rounded text-break" id="resultingUrl"></div>
+                            <small class="form-text text-muted">This is the URL that will be used to
+                                fetch the RSS
+                                feed</small>
+                        </div>
+                    </div>
+
+                    <div class="d-flex justify-content-between align-items-center">
+                        <a href="javascript:history.back()" class="btn btn-outline-secondary">
+                            <i class="bi bi-arrow-left"></i> Back
+                        </a>
+                        <button type="submit" class="btn btn-primary">
+                            <i class="bi bi-plus-circle"></i> Add Feed
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script type="application/javascript">
+        $(document).ready(function () {
+            const feedTypeSelect = $("#Type");
+            const rawRssFields = $("#rawRssFields");
+            const telegramFields = $("#telegramFields");
+            const resultingUrlGroup = $("#resultingUrlGroup");
+            const resultingUrl = $("#resultingUrl");
+
+            function updateFormFields() {
+                const feedType = feedTypeSelect.val();
+                rawRssFields.hide();
+                telegramFields.hide();
+                resultingUrlGroup.hide();
+
+                if (feedType === "@((int)AddModel.FeedType.RawRss)") {
+                    rawRssFields.show();
+                } else if (feedType === "@((int)AddModel.FeedType.Telegram)") {
+                    telegramFields.show();
+                }
+            }
+
+            // Update form on type change
+            feedTypeSelect.change(updateFormFields);
+            updateFormFields();
+
+            // Update resulting URL when provider or channel changes
+            $("#Telegram_ProviderId, #Telegram_ChannelId").on("change input", function () {
+                const provider = $("#Telegram_ProviderId");
+                const channel = $("#Telegram_ChannelId");
+
+                if (provider.val() && channel.val()) {
+                    const baseUrl = provider.find(":selected").data("base-url");
+                    resultingUrl.text(baseUrl + channel.val());
+                    resultingUrlGroup.show();
+                } else {
+                    resultingUrlGroup.hide();
+                }
+            });
+        });
+    </script>
+}

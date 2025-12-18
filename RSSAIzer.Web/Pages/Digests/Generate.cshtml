@@ -1,0 +1,219 @@
+@page
+@model RSSAIzer.Web.Pages.Digests.GenerateModel
+@{
+    ViewData["Title"] = "Generate Digest";
+}
+
+@if (Model.Form == null)
+{
+    <div class="alert alert-warning">
+        Failed to load Feed. Error in frontend.
+    </div>
+    return;
+}
+
+<div class="container-fluid mt-4">
+    <div class="row justify-content-center">
+        <div class="col-lg-10">
+            <div class="d-flex justify-content-between align-items-center mb-4">
+                <h1 class="h3">
+                    <i class="bi bi-newspaper text-primary"></i> Generate Digest
+                </h1>
+                <a href="javascript:history.back()" class="btn btn-outline-secondary">
+                    <i class="bi bi-arrow-left"></i> Back
+                </a>
+            </div>
+
+            <div class="card shadow-sm">
+                <div class="card-header bg-light">
+                    <i class="bi bi-gear-fill me-2"></i> Digest Parameters
+                </div>
+                <div class="card-body">
+                    <form method="post" id="generateForm">
+                        <!-- Date Range Section -->
+                        <div class="row g-3 mb-4">
+                            <div class="col-md-6">
+                                <div class="card h-100">
+                                    <div class="card-body">
+                                        <h6 class="card-subtitle mb-3 text-muted d-flex justify-content-between">
+                                            <span><i class="bi bi-calendar-range me-2"></i>Start Date</span>
+                                            <small class="text-muted">UTC time</small>
+                                        </h6>
+                                        <div class="mb-2">
+                                            <input asp-for="@Model.Form.DateFrom"
+                                                   type="datetime-local"
+                                                   class="form-control"/>
+                                            <span asp-validation-for="@Model.Form.DateFrom"
+                                                  class="text-danger"></span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="card h-100">
+                                    <div class="card-body">
+                                        <h6 class="card-subtitle mb-3 text-muted d-flex justify-content-between">
+                                            <span><i class="bi bi-calendar-range me-2"></i>End Date</span>
+                                            <small class="text-muted">UTC time</small>
+                                        </h6>
+                                        <div class="mb-2">
+                                            <input asp-for="@Model.Form.DateTo"
+                                                   type="datetime-local"
+                                                   class="form-control"/>
+                                            <span asp-validation-for="@Model.Form.DateTo"
+                                                  class="text-danger"></span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Feed Selection -->
+                        <div class="card mb-4">
+                            <div class="card-body">
+                                <div class="d-flex justify-content-between align-items-center mb-3">
+                                    <h6 class="card-subtitle text-muted mb-0">
+                                        <i class="bi bi-broadcast me-2"></i>Select Feeds
+                                    </h6>
+                                    <div class="form-check">
+                                        <input class="form-check-input" type="checkbox"
+                                               id="selectAllFeeds">
+                                        <label class="form-check-label" for="selectAllFeeds">
+                                            Select All
+                                        </label>
+                                    </div>
+                                </div>
+                                <div class="row row-cols-1 g-2">
+                                    @foreach (var feed in Model.Feeds)
+                                    {
+                                        <div class="col card feed-card">
+                                            <div class="card-body p-2">
+                                                <div class="form-check mb-0">
+                                                    <input class="form-check-input feed-checkbox"
+                                                           type="checkbox"
+                                                           name="Form.SelectedFeedUrls"
+                                                           value="@feed.Url"
+                                                           id="feed_@feed.Url"
+                                                           @(Model.Form.SelectedFeedUrls.Contains(feed.Url) ? "checked" : "")/>
+                                                    <label class="form-check-label"
+                                                           for="feed_@feed.Url">
+                                                        <i class="bi bi-telegram text-primary me-2"></i>@feed.Title
+                                                    </label>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    }
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Prompt Overrides Section -->
+                        <div class="card mb-4">
+                            <div
+                                class="card-header bg-light d-flex justify-content-between align-items-center">
+                                <div>
+                                    <i class="bi bi-pencil-square me-2"></i>Optional: Override
+                                    AI Prompts
+                                </div>
+                                <button class="btn btn-sm btn-outline-secondary collapsed"
+                                        type="button"
+                                        data-bs-toggle="collapse"
+                                        data-bs-target="#promptsCollapse"
+                                        aria-expanded="false"
+                                        aria-controls="promptsCollapse">
+                                        <span class="d-inline" data-bs-toggle="collapse"
+                                              data-bs-target="#promptsCollapse"
+                                              aria-expanded="false">Show</span>
+                                    <span class="d-none" data-bs-toggle="collapse"
+                                          data-bs-target="#promptsCollapse"
+                                          aria-expanded="true">Hide</span> Prompts
+                                </button>
+                            </div>
+                            <div class="collapse" id="promptsCollapse">
+                                <div class="card-body">
+                                    <div class="mb-3">
+                                        <label
+                                            asp-for="@Model.Form.PostSummaryUserPromptOverride"
+                                            class="form-label">Post Summary User Prompt</label>
+                                        <textarea
+                                            asp-for="@Model.Form.PostSummaryUserPromptOverride"
+                                            class="form-control input-multiline"></textarea>
+                                        <span
+                                            asp-validation-for="@Model.Form.PostSummaryUserPromptOverride"
+                                            class="text-danger"></span>
+                                    </div>
+                                    <div class="mb-3">
+                                        <label
+                                            asp-for="@Model.Form.PostImportanceUserPromptOverride"
+                                            class="form-label">Post Importance User
+                                            Prompt</label>
+                                        <textarea
+                                            asp-for="@Model.Form.PostImportanceUserPromptOverride"
+                                            class="form-control input-multiline"></textarea>
+                                        <span
+                                            asp-validation-for="@Model.Form.PostImportanceUserPromptOverride"
+                                            class="text-danger"></span>
+                                    </div>
+                                    <div class="mb-3">
+                                        <label
+                                            asp-for="@Model.Form.DigestSummaryUserPromptOverride"
+                                            class="form-label">Digest Summary User
+                                            Prompt</label>
+                                        <textarea
+                                            asp-for="@Model.Form.DigestSummaryUserPromptOverride"
+                                            class="form-control input-multiline"></textarea>
+                                        <span
+                                            asp-validation-for="@Model.Form.DigestSummaryUserPromptOverride"
+                                            class="text-danger"></span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="d-flex justify-content-end">
+                            <button type="submit" class="btn btn-primary btn-lg">
+                                <i class="bi bi-play-circle me-2"></i> Generate Digest
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+    .feed-card {
+        transition: all 0.2s ease-in-out;
+        border: 1px solid rgba(0, 0, 0, .125);
+    }
+
+    .feed-card:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 .125rem .25rem rgba(0, 0, 0, .075);
+    }
+</style>
+
+@section Scripts {
+    <script type="application/javascript">
+        $('.collapse').on('shown.bs.collapse', function () {
+            autosize($(".input-multiline"));
+        });
+
+        const $selectAllCheckbox = $('#selectAllFeeds');
+        const $feedCheckboxes = $('.feed-checkbox');
+
+        $selectAllCheckbox.on('change', function () {
+            $feedCheckboxes.prop('checked', this.checked);
+        });
+
+        $feedCheckboxes.on('change', function () {
+            const allChecked = $feedCheckboxes.length === $feedCheckboxes.filter(':checked').length;
+            $selectAllCheckbox.prop('checked', allChecked);
+        });
+
+        // Set initial state
+        const allChecked = $feedCheckboxes.length === $feedCheckboxes.filter(':checked').length;
+        $selectAllCheckbox.prop('checked', allChecked);
+    </script>
+}
