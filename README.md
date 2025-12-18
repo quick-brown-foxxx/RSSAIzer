@@ -100,7 +100,7 @@ Data is stored at `./RSSAIzer.Web/runtime` directory via docker volume.
 
 ### Development
 
-1. Install dotnet 9 somehow (ask chatgpt)
+1. Install dotnet 9 and npm 18+ somehow (ask chatgpt)
 
 2. For configuration use:
 
@@ -111,6 +111,8 @@ Data is stored at `./RSSAIzer.Web/runtime` directory via docker volume.
 3. Restore and build app
 
    ```bash
+   # exactly this order initially, later just dotnet build
+   dotnet tool restore
    dotnet restore
    dotnet build
    ```
